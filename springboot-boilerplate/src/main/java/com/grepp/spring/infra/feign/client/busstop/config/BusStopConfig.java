@@ -1,8 +1,12 @@
 package com.grepp.spring.infra.feign.client.busstop.config;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.grepp.spring.infra.feign.client.busstop.decoder.BusStopErrorDecoder;
+import com.grepp.spring.infra.feign.client.busstop.dto.BusStopResult;
 import com.grepp.spring.infra.feign.error.FeignCommonException;
 import feign.Response;
 import feign.ResponseInterceptor;
+import java.io.InputStream;
 import java.util.Collection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -10,9 +14,17 @@ import org.springframework.http.HttpStatus;
 public class BusStopConfig {
     
     @Bean
+    public BusStopErrorDecoder busStopErrorDecoder(){
+        return new BusStopErrorDecoder();
+    }
+    
+    @Bean
     public ResponseInterceptor busStopInterceptor(){
         return (invocationContext, chain) -> {
             Response response = invocationContext.response();
+            
+            XmlMapper xmlMapper = new XmlMapper();
+            HttpStatus status = HttpStatus.valueOf(response.status());
             
             Collection<String> contentType = response.headers().get("content-type");
             if(contentType == null){
@@ -20,9 +32,11 @@ public class BusStopConfig {
             }
             
             if(contentType.contains("application/xml;charset=UTF-8")){
-                throw new FeignCommonException("0000", "Content-type is XML", HttpStatus.NOT_ACCEPTABLE);
+                try(InputStream body = response.body().asInputStream()){
+                    BusStopResult error = xmlMapper.readValue(body, BusStopResult.class);
+                    throw new FeignCommonException(error.CODE(), error.MESSAGE(), status);
+                }
             }
-
             return chain.next(invocationContext);
         };
     }

@@ -26,7 +26,7 @@ class BusStopApiTest {
     
     @Test
     public void getBusStop_throwEx_invalidApiKey(){
-       assertThatThrownBy(() -> busStopApi.getBusStop("1111",1,5))
+       assertThatThrownBy(() -> busStopApi.getBusStop("1111",1,1000))
            .isInstanceOf(FeignCommonException.class)
            .satisfies(ex -> {
                System.out.println(ex);
