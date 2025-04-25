@@ -1,4 +1,4 @@
-package com.grepp.spring.app.model.student;
+package com.grepp.spring.app.model.student.repository;
 
 import com.grepp.spring.app.model.student.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
