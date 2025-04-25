@@ -74,10 +74,8 @@ public class SecurityConfig {
                 (requests) -> requests
                                   .requestMatchers(GET, "/", "/assets/**", "/download/**").permitAll()
                                   .requestMatchers(GET, "/book/list").permitAll()
-                                  .requestMatchers(GET, "/api/book/list").permitAll()
-                                  .requestMatchers(GET, "/api/member/exists/*").permitAll()
-                                  .requestMatchers(GET, "/member/signup").permitAll()
-                                  .requestMatchers(GET, "/member/signin").permitAll()
+                                  .requestMatchers(GET, "/api/book/list", "/api/member/exists/*", "/api/ai/**").permitAll()
+                                  .requestMatchers(GET, "/member/signup", "/member/signin").permitAll()
                                   .requestMatchers(POST, "/member/signin", "/member/signup").permitAll()
                                   .anyRequest().authenticated()
             )
