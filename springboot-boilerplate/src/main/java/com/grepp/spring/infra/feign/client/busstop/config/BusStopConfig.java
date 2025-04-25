@@ -4,8 +4,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.grepp.spring.infra.feign.client.busstop.decoder.BusStopErrorDecoder;
 import com.grepp.spring.infra.feign.client.busstop.dto.BusStopResult;
 import com.grepp.spring.infra.feign.error.FeignCommonException;
+import feign.FeignException;
 import feign.Response;
 import feign.ResponseInterceptor;
+import feign.codec.ErrorDecoder;
 import java.io.InputStream;
 import java.util.Collection;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +16,11 @@ import org.springframework.http.HttpStatus;
 public class BusStopConfig {
     
     @Bean
-    public BusStopErrorDecoder busStopErrorDecoder(){
-        return new BusStopErrorDecoder();
+    public ErrorDecoder errorDecoder(){
+        return (s, response) -> {
+            HttpStatus status = HttpStatus.valueOf(response.status());
+            return new FeignCommonException("", "", status);
+        };
     }
     
     @Bean

@@ -27,7 +27,7 @@ public class DataInitializeService {
     @Transactional
     public void initialize(){
         if(busStopRepository.count() > 0) return;
-        BusStopResponse response = busStopApi.getBusStop(apiKey, 1, 5);
+        BusStopResponse response = busStopApi.getBusStop();
         List<BusStopDto> dtos = response.document().row();
         List<BusStop> busStops = dtos.stream().map(e -> mapper.map(e, BusStop.class)).toList();
         busStopRepository.saveAll(busStops);

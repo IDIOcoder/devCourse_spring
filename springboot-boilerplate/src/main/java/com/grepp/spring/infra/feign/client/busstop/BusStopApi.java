@@ -6,19 +6,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "busStopApi",
-    url = "http://openapi.seoul.go.kr:8088/",
-    configuration = BusStopConfig.class
-)
+@FeignClient(name = "busStopApi", url = "http://openapi.seoul.go.kr:8088"
+, configuration = BusStopConfig.class)
 public interface BusStopApi {
     
-    @GetMapping("{apiKey}/json/busStopLocationXyInfo/{startIndex}/{endIndex}")
+    @GetMapping
     BusStopResponse getBusStop(
-        @PathVariable
-        String apiKey,
-        @PathVariable
-        int startIndex,
-        @PathVariable
-        int endIndex
+    
     );
 }

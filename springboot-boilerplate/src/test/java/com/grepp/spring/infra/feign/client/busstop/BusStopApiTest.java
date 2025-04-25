@@ -20,17 +20,15 @@ class BusStopApiTest {
     
     @Test
     public void feignTest(){
-        System.out.println(busStopApi.getBusStop(apiKey,
-            1,5));
+        System.out.println(busStopApi.getBusStop());
     }
     
     @Test
     public void getBusStop_throwEx_invalidApiKey(){
-       assertThatThrownBy(() -> busStopApi.getBusStop("1111",1,1000))
+       assertThatThrownBy(() -> busStopApi.getBusStop())
            .isInstanceOf(FeignCommonException.class)
            .satisfies(ex -> {
                System.out.println(ex);
            });
     }
-
 }
