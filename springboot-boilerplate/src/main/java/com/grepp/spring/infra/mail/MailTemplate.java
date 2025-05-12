@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -14,6 +16,7 @@ import org.thymeleaf.context.Context;
 @Component
 @RequiredArgsConstructor
 @Setter
+@EnableAsync
 public class MailTemplate {
     
     private final JavaMailSender javaMailSender;
@@ -35,6 +38,7 @@ public class MailTemplate {
         return properties.get(name);
     }
     
+    @Async
     public void send(){
         javaMailSender.send(mimeMessage -> {
             mimeMessage.setFrom(from);
@@ -49,9 +53,4 @@ public class MailTemplate {
         context.setVariables(properties);
         return templateEngine.process(templatePath, context);
     }
-    
-    
-    
-
-
 }

@@ -5,7 +5,11 @@ import com.grepp.spring.app.controller.web.member.payload.SignupRequest;
 import com.grepp.spring.app.model.auth.code.Role;
 import com.grepp.spring.app.model.member.MemberService;
 import com.grepp.spring.app.model.member.dto.MemberDto;
+import com.grepp.spring.infra.error.exceptions.CommonException;
+import com.grepp.spring.infra.response.ResponseCode;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,17 +36,40 @@ public class MemberController {
         return "member/signup";
     }
     
-    @PostMapping("signup")
-    public String signup(
+    @PostMapping("verify")
+    public String verifySignup(
         @Valid SignupRequest form,
         BindingResult bindingResult,
-        Model model){
+        HttpSession session,
+        RedirectAttributes redirectAttributes){
         
         if(bindingResult.hasErrors()){
             return "member/signup";
         }
         
-        memberService.signup(form.toDto(), Role.ROLE_USER);
+        String token = UUID.randomUUID().toString();
+        MemberDto dto = form.toDto();
+        memberService.sendVerificationMail(token, dto);
+        session.setAttribute(token, dto);
+        redirectAttributes.addAttribute("msg", "회원가입 메일이 발송되었습니다.");
+        return "redirect:/";
+    }
+    
+    @GetMapping("signup/{token}")
+    public String signup(
+        @PathVariable
+        String token,
+        HttpSession session
+       ){
+        
+        MemberDto dto = (MemberDto) session.getAttribute(token);
+        
+        if(dto == null){
+            throw new CommonException(ResponseCode.INVALID_TOKEN);
+        }
+        
+        memberService.signup(dto, Role.ROLE_USER);
+        session.removeAttribute(token);
         return "redirect:/";
     }
     
