@@ -47,11 +47,7 @@ public class DataInitializeService {
     @Transactional
     public void initializeVector() {
         
-        if (studentEmbeddingRepository.count() > 0) {
-            System.out.println("이미 초기화 되었습니다.");
-            return;
-        }
-        
+        if (studentEmbeddingRepository.count() > 0)  return;
         List<Student> students = studentRepository.findAll();
         List<StudentEmbedding> embeddings = students
                                                 .stream()

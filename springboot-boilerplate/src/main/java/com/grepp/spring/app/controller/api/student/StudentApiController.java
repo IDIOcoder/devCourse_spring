@@ -5,7 +5,6 @@ import com.grepp.spring.app.controller.api.student.payload.StudentRecommendRespo
 import com.grepp.spring.app.model.student.StudentAiService;
 import com.grepp.spring.app.model.student.code.Sentimental;
 import com.grepp.spring.infra.response.ApiResponse;
-import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +38,4 @@ public class StudentApiController {
     ){
         return ResponseEntity.ok(ApiResponse.success(studentAiService.recommendTeam(request)));
     }
-    
-
 }
