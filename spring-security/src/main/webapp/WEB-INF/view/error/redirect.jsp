@@ -6,7 +6,7 @@
     <title>Title</title>
 </head>
 <body>
-<script>
+<script >
   alert('<c:out value="${requestScope.message}"/>');
   location.href = '/';
 </script>
