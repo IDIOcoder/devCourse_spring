@@ -30,22 +30,23 @@ public class AuthExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         
-        try{
-            filterChain.doFilter(request,response);
-        }catch (CommonException ex){
-            if(request.getRequestURI().startsWith("/api")){
-                handlerExceptionResolver.resolveException(request, response, null, new AuthApiException(ex.code()));
-                return;
-            }
-            handlerExceptionResolver.resolveException(request, response, null, new AuthWebException(ex.code()));
-        }catch (JwtException ex){
-            if(request.getRequestURI().startsWith("/api")){
-                handlerExceptionResolver
-                    .resolveException(request, response, null, new AuthApiException(ResponseCode.UNAUTHORIZED));
-                return;
-            }
-            handlerExceptionResolver
-                .resolveException(request, response, null, new AuthWebException(ResponseCode.UNAUTHORIZED));
+        try {
+            filterChain.doFilter(request, response);
+        } catch (CommonException ex) {
+            throwAuthEx(request, response, ex.code());
+        } catch (JwtException ex) {
+            throwAuthEx(request, response, ResponseCode.UNAUTHORIZED);
         }
+    }
+    
+    private void throwAuthEx(HttpServletRequest request, HttpServletResponse response,
+        ResponseCode code) {
+        if (request.getRequestURI().startsWith("/api")) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                new AuthApiException(code));
+            return;
+        }
+        handlerExceptionResolver.resolveException(request, response, null,
+            new AuthWebException(code));
     }
 }

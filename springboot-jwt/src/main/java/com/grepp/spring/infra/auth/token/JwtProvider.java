@@ -3,8 +3,12 @@ package com.grepp.spring.infra.auth.token;
 import com.grepp.spring.app.model.auth.RefreshTokenRepository;
 import com.grepp.spring.app.model.auth.domain.Principal;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -77,9 +81,22 @@ public class JwtProvider {
     }
     
     private Claims parseClaim(String accessToken) {
-        return Jwts.parser().verifyWith(getSecretKey()).build()
-                   .parseSignedClaims(accessToken).getPayload();
+        try{
+            return Jwts.parser().verifyWith(getSecretKey()).build()
+                       .parseSignedClaims(accessToken).getPayload();
+        }catch (ExpiredJwtException ex){
+            return ex.getClaims();
+        }
     }
     
-
+    
+    public boolean validateToken(String requestAccessToken) {
+        try{
+            Jwts.parser().verifyWith(getSecretKey()).build().parse(requestAccessToken);
+            return true;
+        }catch(SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e){
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
 }
