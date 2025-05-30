@@ -3,6 +3,7 @@ package com.grepp.spring.infra.auth.token;
 import com.grepp.spring.infra.error.exceptions.AuthApiException;
 import com.grepp.spring.infra.error.exceptions.AuthWebException;
 import com.grepp.spring.infra.response.ResponseCode;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 log.warn(iae.getMessage());
                 yield ResponseCode.UNAUTHORIZED;
             }
+         
             default -> {
                 log.warn(authException.getMessage());
                 yield ResponseCode.BAD_REQUEST;

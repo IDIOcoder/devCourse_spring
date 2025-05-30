@@ -3,6 +3,8 @@ package com.grepp.spring.infra.auth.token;
 import com.grepp.spring.infra.error.exceptions.AuthApiException;
 import com.grepp.spring.infra.error.exceptions.AuthWebException;
 import com.grepp.spring.infra.error.exceptions.CommonException;
+import com.grepp.spring.infra.response.ResponseCode;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,6 +38,14 @@ public class AuthExceptionFilter extends OncePerRequestFilter {
                 return;
             }
             handlerExceptionResolver.resolveException(request, response, null, new AuthWebException(ex.code()));
+        }catch (JwtException ex){
+            if(request.getRequestURI().startsWith("/api")){
+                handlerExceptionResolver
+                    .resolveException(request, response, null, new AuthApiException(ResponseCode.UNAUTHORIZED));
+                return;
+            }
+            handlerExceptionResolver
+                .resolveException(request, response, null, new AuthWebException(ResponseCode.UNAUTHORIZED));
         }
     }
 }
