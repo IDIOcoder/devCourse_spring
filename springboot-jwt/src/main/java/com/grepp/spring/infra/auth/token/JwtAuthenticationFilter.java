@@ -1,5 +1,7 @@
 package com.grepp.spring.infra.auth.token;
 
+import com.grepp.spring.infra.error.exceptions.CommonException;
+import com.grepp.spring.infra.response.ResponseCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-        throw new BadCredentialsException("아이디나 비밀번호를 확인하세요.");
+        throw new CommonException(ResponseCode.SECURITY_INCIDENT);
     }
 }

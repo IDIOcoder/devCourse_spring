@@ -3,6 +3,7 @@ package com.grepp.spring.infra.config;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import com.grepp.spring.infra.auth.token.AuthExceptionFilter;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationEntryPoint;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationFilter;
 import jakarta.servlet.ServletException;
@@ -29,6 +30,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -39,6 +41,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthExceptionFilter authExceptionFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
     
     @Value("${remember-me.key}")
@@ -86,7 +89,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 (requests) -> requests
-                                  .requestMatchers(GET, "/", "/favicon.ico", "/css/**", "/img/**","/js/**","/download/**").permitAll()
+                                  .requestMatchers(GET, "/", "/error", "/favicon.ico", "/css/**", "/img/**","/js/**","/download/**").permitAll()
                                   .requestMatchers(GET, "/book/list").permitAll()
                                   .requestMatchers(GET, "/api/book/list", "/api/member/exists/*", "/api/ai/**").permitAll()
                                   .requestMatchers(GET, "/member/signup", "/member/signup/*", "/member/signin").permitAll()
@@ -95,6 +98,7 @@ public class SecurityConfig {
                                   .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            //.addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class)
             .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
         return http.build();
     }
