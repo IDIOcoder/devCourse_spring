@@ -8,7 +8,7 @@
 <body>
 <main layout:fragment="content">
   <div th:if="${param.error}" class="card-panel red lighten-2 text-white">아이디나 비밀번호를 확인하세요</div>
-  <form class="col s12" th:action="@{/member/signin}" th:object="${signinRequest}" method="post"
+  <form class="col s12" th:object="${signinRequest}" method="post"
         id="signupForm">
     <div class="row">
       <div class="input-field col s7 ">
@@ -24,14 +24,34 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn waves-effect waves-light offset-s1" type="submit" name="action">
+      <button class="btn waves-effect waves-light offset-s1" id="btnForm" type="button" name="action">
         Submit
         <i class="material-icons right">send</i>
       </button>
     </div>
-
   </form>
-
 </main>
+<script layout:fragment="script">
+  document.querySelector("#btnForm").addEventListener("click", async ev => {
+    const userId = document.querySelector("#userId").value;
+    const password = document.querySelector("#password").value;
+
+    const res = await fetch("/auth/signin", {
+      method:"POST",
+      body:JSON.stringify({"username":userId, "password":password}),
+      headers:{
+        "Content-Type":"application/json"
+      }
+    });
+
+    if(!res.ok){
+      const data = await res.json()
+      alert(data.message)
+    }
+
+    if(res.ok) location.href = "/";
+  })
+
+</script>
 </body>
 </html>

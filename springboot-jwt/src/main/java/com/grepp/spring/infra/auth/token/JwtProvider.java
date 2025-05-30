@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,17 +26,22 @@ public class JwtProvider {
     @Value("${jwt.secrete}")
     private String key;
     
+    @Getter
     @Value("${jwt.access-expiration}")
     private long atExpiration;
     
+    @Getter
     @Value("${jwt.refresh-expiration}")
     private long rtExpiration;
     
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
     
-    public JwtProvider() {
-        String base64Key = Base64.getEncoder().encodeToString(key.getBytes());
-        this.secretKey = Keys.hmacShaKeyFor(base64Key.getBytes(StandardCharsets.UTF_8));
+    public SecretKey getSecretKey(){
+        if(secretKey == null){
+            String base64Key = Base64.getEncoder().encodeToString(key.getBytes());
+            this.secretKey = Keys.hmacShaKeyFor(base64Key.getBytes(StandardCharsets.UTF_8));
+        }
+        return this.secretKey;
     }
     
     public String generateAccessToken(Authentication authentication){
