@@ -59,16 +59,10 @@ public class RedisConfig {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 날짜를 타임스탬프가 아닌 문자열로 직렬화
         
-        // 2. Spring Security 객체 직렬화/역직렬화 지원 (가장 중요한 부분)
-        // 이 두 모듈은 'spring-security-core' 및 'spring-security-web' 내부에 포함되어 있습니다.
-        mapper.registerModule(new CoreJackson2Module());
-        mapper.registerModule(new WebJackson2Module());
-        
         mapper.activateDefaultTyping(
             BasicPolymorphicTypeValidator.builder()
                 .allowIfBaseType("org.springframework.security.") // 기존 설정 (유지)
                 .allowIfBaseType("com.grepp.spring.")    // 당신의 도메인 객체 패키지 (유지)
-                .allowIfSubType(Object.class)
                 .build(),
             ObjectMapper.DefaultTyping.NON_FINAL,
             JsonTypeInfo.As.PROPERTY
