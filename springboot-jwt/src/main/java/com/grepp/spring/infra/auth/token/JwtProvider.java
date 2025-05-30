@@ -1,19 +1,26 @@
 package com.grepp.spring.infra.auth.token;
 
 import com.grepp.spring.app.model.auth.RefreshTokenRepository;
+import com.grepp.spring.app.model.auth.domain.Principal;
+import dev.langchain4j.agent.tool.P;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,9 +46,9 @@ public class JwtProvider {
     public SecretKey getSecretKey(){
         if(secretKey == null){
             String base64Key = Base64.getEncoder().encodeToString(key.getBytes());
-            this.secretKey = Keys.hmacShaKeyFor(base64Key.getBytes(StandardCharsets.UTF_8));
+            secretKey = Keys.hmacShaKeyFor(base64Key.getBytes(StandardCharsets.UTF_8));
         }
-        return this.secretKey;
+        return secretKey;
     }
     
     public String generateAccessToken(Authentication authentication){
@@ -55,8 +62,25 @@ public class JwtProvider {
                    .subject(authentication.getName())
                    .claim("auth",authorities)
                    .expiration(atExpiresIn)
-                   .signWith(this.secretKey)
+                   .signWith(getSecretKey())
                    .compact();
     }
+    
+    public Authentication genreateAuthentication(String accessToken){
+        Claims claims = parseClaim(accessToken);
+        List<? extends GrantedAuthority> authorities =
+            Arrays.stream(claims.get("auth").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+        
+        Principal principal = new Principal(claims.getSubject(),"", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+    
+    private Claims parseClaim(String accessToken) {
+        return Jwts.parser().verifyWith(getSecretKey()).build()
+                   .parseSignedClaims(accessToken).getPayload();
+    }
+    
     
 }

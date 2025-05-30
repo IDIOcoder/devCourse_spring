@@ -7,6 +7,7 @@ import com.grepp.spring.app.model.member.MemberRepository;
 import com.grepp.spring.app.model.member.entity.Member;
 import com.grepp.spring.app.model.team.TeamMemberRepository;
 import com.grepp.spring.app.model.team.entity.TeamMember;
+import com.grepp.spring.infra.auth.token.GrantType;
 import com.grepp.spring.infra.auth.token.JwtProvider;
 import dev.langchain4j.service.V;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class AuthService implements UserDetailsService {
                    .refreshToken(refreshToken.getToken())
                    .atExpiresIn(jwtProvider.getAtExpiration())
                    .rtExpiresIn(jwtProvider.getRtExpiration())
+                   .grantType(GrantType.BEARER)
                    .build();
     }
     

@@ -3,10 +3,13 @@ package com.grepp.spring.infra.config;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import com.grepp.spring.infra.auth.token.JwtAuthenticationEntryPoint;
+import com.grepp.spring.infra.auth.token.JwtAuthenticationFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +18,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,11 +30,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
+    
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint entryPoint;
     
     @Value("${remember-me.key}")
     private String rememberMeKey;
@@ -70,26 +80,22 @@ public class SecurityConfig {
         // ** : 모든 depth 의 모든 경로
         // Security Config 에는 인증과 관련된 설정만 지정 (PermitAll or Authenticated)
         http
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 (requests) -> requests
-                                  .requestMatchers(GET, "/", "/assets/**", "/download/**").permitAll()
+                                  .requestMatchers(GET, "/", "/favicon.ico", "/css/**", "/img/**","/js/**","/download/**").permitAll()
                                   .requestMatchers(GET, "/book/list").permitAll()
                                   .requestMatchers(GET, "/api/book/list", "/api/member/exists/*", "/api/ai/**").permitAll()
                                   .requestMatchers(GET, "/member/signup", "/member/signup/*", "/member/signin").permitAll()
                                   .requestMatchers(POST, "/member/signin", "/member/signup", "/member/verify").permitAll()
+                                  .requestMatchers(POST, "/auth/signin").permitAll()
                                   .anyRequest().authenticated()
             )
-            .formLogin((form) -> form
-                                     .loginPage("/member/signin")
-                                     .usernameParameter("userId")
-                                     .loginProcessingUrl("/member/signin")
-                                     .defaultSuccessUrl("/")
-                                     .successHandler(successHandler())
-                                     .permitAll()
-            )
-            .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
-            .logout(LogoutConfigurer::permitAll);
-        
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
         return http.build();
     }
     

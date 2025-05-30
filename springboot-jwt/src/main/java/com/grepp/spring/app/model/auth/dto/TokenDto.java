@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class TokenDto {
     private String accessToken;
     private String refreshToken;
-    private GrantType grantType = GrantType.BEARER;
+    private GrantType grantType;
     private Long atExpiresIn;
     private Long rtExpiresIn;
 }

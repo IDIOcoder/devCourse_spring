@@ -4,6 +4,7 @@ import com.grepp.spring.app.controller.api.auth.payload.SigninRequest;
 import com.grepp.spring.app.controller.api.auth.payload.TokenResponse;
 import com.grepp.spring.app.model.auth.AuthService;
 import com.grepp.spring.app.model.auth.dto.TokenDto;
+import com.grepp.spring.infra.auth.token.GrantType;
 import com.grepp.spring.infra.auth.token.TokenCookieFactory;
 import com.grepp.spring.infra.auth.token.TokenType;
 import com.grepp.spring.infra.response.ApiResponse;
@@ -31,7 +32,7 @@ public class AuthController {
         SigninRequest req,
         HttpServletResponse response
     ) {
-        TokenDto dto = authService.signin(req.getUserId(), req.getPassword());
+        TokenDto dto = authService.signin(req.getUsername(), req.getPassword());
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(TokenType.ACCESS_TOKEN.name(),
             dto.getAccessToken(), dto.getAtExpiresIn());
         ResponseCookie refreshTokenCookie = TokenCookieFactory.create(TokenType.REFRESH_TOKEN.name(),
@@ -42,6 +43,7 @@ public class AuthController {
         TokenResponse tokenResponse = TokenResponse.builder()
                                           .accessToken(dto.getAccessToken())
                                           .expiresIn(dto.getAtExpiresIn())
+                                          .grantType(GrantType.BEARER)
                                           .build();
         return ResponseEntity.ok(ApiResponse.success(tokenResponse));
     }

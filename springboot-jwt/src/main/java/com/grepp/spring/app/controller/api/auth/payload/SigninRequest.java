@@ -8,7 +8,7 @@ import lombok.Data;
 public class SigninRequest {
     
     @NotBlank
-    private String userId;
+    private String username;
     
     @NotBlank
     @Size(min = 4, max = 10)

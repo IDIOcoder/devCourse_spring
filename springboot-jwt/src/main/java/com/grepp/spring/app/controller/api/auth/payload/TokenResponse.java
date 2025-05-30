@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 public class TokenResponse {
     private String accessToken;
-    private GrantType grantType = GrantType.BEARER;
+    private GrantType grantType;
     private Long expiresIn;
 }
