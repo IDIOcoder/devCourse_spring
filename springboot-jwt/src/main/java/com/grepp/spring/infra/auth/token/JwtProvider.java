@@ -2,6 +2,7 @@ package com.grepp.spring.infra.auth.token;
 
 import com.grepp.spring.app.model.auth.token.RefreshTokenRepository;
 import com.grepp.spring.app.model.auth.domain.Principal;
+import com.grepp.spring.app.model.auth.token.dto.AccessTokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import lombok.Getter;
@@ -56,19 +58,27 @@ public class JwtProvider {
         return secretKey;
     }
     
-    public String generateAccessToken(Authentication authentication){
+    public AccessTokenDto generateAccessToken(Authentication authentication){
         String authorities = authentication.getAuthorities().stream()
                                  .map(GrantedAuthority::getAuthority)
                                  .collect(Collectors.joining(","));
         
+        String id = UUID.randomUUID().toString();
         long now = new Date().getTime();
         Date atExpiresIn = new Date(now + atExpiration);
-        return Jwts.builder()
+        String accessToken = Jwts.builder()
                    .subject(authentication.getName())
+                   .id(id)
                    .claim("auth",authorities)
                    .expiration(atExpiresIn)
                    .signWith(getSecretKey())
                    .compact();
+        
+        return AccessTokenDto.builder()
+                   .id(id)
+                   .token(accessToken)
+                   .expiresIn(atExpiration)
+                   .build();
     }
     
     public Authentication genreateAuthentication(String accessToken){

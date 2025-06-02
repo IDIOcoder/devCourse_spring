@@ -43,6 +43,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         Claims claims = jwtProvider.parseClaim(requestAccessToken);
+
+        if(request.getRequestURI().equals("/auth/logout")){
+            Optional<RefreshToken> optional = refreshTokenRepository.findByAccessTokenId(claims.getId());
+            optional.ifPresent(refreshTokenRepository::delete);
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         if(userBlackListRepository.existsById(claims.getSubject())){
             filterChain.doFilter(request, response);
             return;
@@ -54,13 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (ExpiredJwtException ex) {
-            Authentication authentication = jwtProvider.genreateAuthentication(requestAccessToken);
             String newAccessToken = renewingAccessToken(requestAccessToken, request);
             if (newAccessToken == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            RefreshToken newRefreshToken = renewingRefreshToken(authentication.getName());
+            RefreshToken newRefreshToken = renewingRefreshToken(claims.getId());
             responseToken(response, newAccessToken, newRefreshToken);
         }
         
@@ -82,8 +89,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
     
-    private RefreshToken renewingRefreshToken(String sub) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(sub).get();
+    private RefreshToken renewingRefreshToken(String id) {
+        RefreshToken refreshToken = refreshTokenRepository.findByAccessTokenId(id).get();
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshTokenRepository.save(refreshToken);
         return refreshToken;
@@ -92,7 +99,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String renewingAccessToken(String requestAccessToken, HttpServletRequest request) {
         Authentication authentication = jwtProvider.genreateAuthentication(requestAccessToken);
         String refreshToken = resolveToken(request, TokenType.REFRESH_TOKEN);
-        Optional<RefreshToken> optional = refreshTokenRepository.findById(authentication.getName());
+        Claims claims = jwtProvider.parseClaim(requestAccessToken);
+        Optional<RefreshToken> optional = refreshTokenRepository.findByAccessTokenId(claims.getId());
         if (optional.isEmpty()) {
             return null;
         }
@@ -107,7 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     
     private String generateAccessToken(Authentication authentication) {
-        String newAccessToken = jwtProvider.generateAccessToken(authentication);
+        String newAccessToken = jwtProvider.generateAccessToken(authentication).getToken();
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return newAccessToken;
     }

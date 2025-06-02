@@ -3,6 +3,7 @@ package com.grepp.spring.app.model.auth;
 import com.grepp.spring.app.model.auth.domain.Principal;
 import com.grepp.spring.app.model.auth.token.RefreshTokenRepository;
 import com.grepp.spring.app.model.auth.token.UserBlackListRepository;
+import com.grepp.spring.app.model.auth.token.dto.AccessTokenDto;
 import com.grepp.spring.app.model.auth.token.dto.TokenDto;
 import com.grepp.spring.app.model.auth.token.entity.RefreshToken;
 import com.grepp.spring.app.model.member.MemberRepository;
@@ -30,10 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class AuthService implements UserDetailsService {
+public class AuthService {
     
-    private final MemberRepository memberRepository;
-    private final TeamMemberRepository teamMemberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserBlackListRepository userBlackListRepository;
@@ -48,42 +47,16 @@ public class AuthService implements UserDetailsService {
         // 블랙리스트에서 제거
         userBlackListRepository.deleteById(username);
         
-        String accessToken = jwtProvider.generateAccessToken(authentication);
-        RefreshToken refreshToken = new RefreshToken(authentication.getName());
+        AccessTokenDto dto = jwtProvider.generateAccessToken(authentication);
+        RefreshToken refreshToken = new RefreshToken(authentication.getName(), dto.getId());
         refreshTokenRepository.save(refreshToken);
         
         return TokenDto.builder()
-                   .accessToken(accessToken)
+                   .accessToken(dto.getToken())
                    .refreshToken(refreshToken.getToken())
                    .atExpiresIn(jwtProvider.getAtExpiration())
                    .rtExpiresIn(jwtProvider.getRtExpiration())
                    .grantType(GrantType.BEARER)
                    .build();
     }
-    
-    
-    @Override
-    public UserDetails loadUserByUsername(String username){
-        
-        Member member = memberRepository.findById(username)
-                            .orElseThrow(() -> new UsernameNotFoundException(username));
-        
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(member.getRole().name()));
-        
-        List<TeamMember> teamMembers = teamMemberRepository.findByUserIdAndActivated(username, true);
-        
-        // 스프링시큐리티는 기본적으로 권한 앞에 ROLE_ 이 있음을 가정
-        // hasRole("ADMIN") =>  ROLE_ADMIN 권한이 있는 지 확인.
-        // TEAM_{teamId}:{role}
-        // hasAuthority("ADMIN") => ADMIN 권한을 확인
-        List<SimpleGrantedAuthority> teamAuthorities =
-            teamMembers.stream().map(e -> new SimpleGrantedAuthority("TEAM_" + e.getTeamId() + ":" + e.getRole()))
-                .toList();
-        
-        authorities.addAll(teamAuthorities);
-        return Principal.createPrincipal(member, authorities);
-    }
-    
-    
 }
