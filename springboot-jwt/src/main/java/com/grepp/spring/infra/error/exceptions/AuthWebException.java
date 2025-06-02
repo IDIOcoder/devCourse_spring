@@ -8,6 +8,10 @@ public class AuthWebException extends CommonException {
         super(code);
     }
     
+    public AuthWebException(ResponseCode code, String redirect) {
+        super(code, redirect);
+    }
+    
     public AuthWebException(ResponseCode code, Exception e) {
         super(code, e);
     }

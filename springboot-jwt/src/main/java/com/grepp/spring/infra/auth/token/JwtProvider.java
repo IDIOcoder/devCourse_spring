@@ -10,6 +10,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -27,6 +29,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -111,4 +114,23 @@ public class JwtProvider {
         }
         return false;
     }
+    
+    public String resolveToken(HttpServletRequest request, TokenType tokenType) {
+        String headerToken = request.getHeader("Authorization");
+        if (headerToken != null && headerToken.startsWith("Bearer")) {
+            return headerToken.substring(7);
+        }
+        
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        
+        return Arrays.stream(cookies)
+                   .filter(e -> e.getName().equals(tokenType.name()))
+                   .map(Cookie::getValue).findFirst()
+                   .orElse(null);
+    }
+    
+
 }

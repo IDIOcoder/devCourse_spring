@@ -17,6 +17,9 @@ public class RefreshToken {
     private String accessTokenId;
     private String token = UUID.randomUUID().toString();
     
+    public RefreshToken() {
+    }
+    
     public RefreshToken(String email, String id) {
         this.email = email;
         this.accessTokenId = id;

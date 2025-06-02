@@ -46,7 +46,18 @@ public class AuthExceptionFilter extends OncePerRequestFilter {
                 new AuthApiException(code));
             return;
         }
+        
+        if(code.equals(ResponseCode.INVALID_TOKEN) ||
+            code.equals(ResponseCode.SECURITY_INCIDENT)
+        ){
+            handlerExceptionResolver.resolveException(request, response, null,
+                new AuthWebException(code, "/member/signin"));
+            return;
+        }
+        
         handlerExceptionResolver.resolveException(request, response, null,
             new AuthWebException(code));
+        
+        
     }
 }
