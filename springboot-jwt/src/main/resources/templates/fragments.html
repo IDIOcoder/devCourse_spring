@@ -42,7 +42,7 @@
 
         <ul sec:authorize="isAuthenticated()" id="nav-mobile" class="right hide-on-med-and-down grey-text">
           <li><a href="/member/mypage" class="grey-text">mypage</a></li>
-          <li><a href="/logout" class="grey-text" id="logout">logout</a></li>
+          <li><a href="#" class="grey-text" id="logout">logout</a></li>
           <li>
             <a href="mobile.html">
               <i class="material-icons grey-text sidenav-trigger"
@@ -53,17 +53,22 @@
       </div>
     </nav>
   </header>
-  <form th:action="@{/logout}" method="post" id="logoutForm"></form>
   <script>
-
     (() => {
-
       const logout = document.querySelector('#logout');
       if(!logout) return;
 
-      logout.addEventListener('click', ev => {
+      logout.addEventListener('click', async ev => {
         ev.preventDefault();
-        logoutForm.submit();
+
+        const response = await fetch("/auth/logout",{
+          method:"POST"
+        });
+
+        if(!response.ok){
+          alert("로그아웃에 실패했습니다.")
+        }
+        location.href = "/";
       });
 
     })();

@@ -1,6 +1,6 @@
-package com.grepp.spring.app.model.auth;
+package com.grepp.spring.app.model.auth.token;
 
-import com.grepp.spring.app.model.auth.entity.RefreshToken;
+import com.grepp.spring.app.model.auth.token.entity.RefreshToken;
 import org.springframework.data.repository.CrudRepository;
 
 public interface RefreshTokenRepository extends CrudRepository<RefreshToken, String> {

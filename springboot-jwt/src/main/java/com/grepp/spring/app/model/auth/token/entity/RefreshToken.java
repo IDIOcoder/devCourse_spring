@@ -1,4 +1,4 @@
-package com.grepp.spring.app.model.auth.entity;
+package com.grepp.spring.app.model.auth.token.entity;
 
 import java.util.UUID;
 import lombok.Getter;

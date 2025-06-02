@@ -1,4 +1,4 @@
-package com.grepp.spring.app.model.auth.dto;
+package com.grepp.spring.app.model.auth.token.dto;
 
 import com.grepp.spring.infra.auth.token.GrantType;
 import lombok.Builder;

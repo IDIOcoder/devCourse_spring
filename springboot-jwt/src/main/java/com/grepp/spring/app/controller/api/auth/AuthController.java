@@ -3,7 +3,7 @@ package com.grepp.spring.app.controller.api.auth;
 import com.grepp.spring.app.controller.api.auth.payload.SigninRequest;
 import com.grepp.spring.app.controller.api.auth.payload.TokenResponse;
 import com.grepp.spring.app.model.auth.AuthService;
-import com.grepp.spring.app.model.auth.dto.TokenDto;
+import com.grepp.spring.app.model.auth.token.dto.TokenDto;
 import com.grepp.spring.infra.auth.token.GrantType;
 import com.grepp.spring.infra.auth.token.TokenCookieFactory;
 import com.grepp.spring.infra.auth.token.TokenType;
@@ -47,6 +47,33 @@ public class AuthController {
                                           .build();
         return ResponseEntity.ok(ApiResponse.success(tokenResponse));
     }
+    
+    @PostMapping("logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+        HttpServletResponse response
+    ){
+        ResponseCookie expiredAccessToken = TokenCookieFactory.createExpiredToken(TokenType.ACCESS_TOKEN);
+        ResponseCookie expiredRefreshToken = TokenCookieFactory.createExpiredToken(TokenType.REFRESH_TOKEN);
+        response.addHeader("Set-Cookie", expiredAccessToken.toString());
+        response.addHeader("Set-Cookie", expiredRefreshToken.toString());
+        return ResponseEntity.ok(ApiResponse.noContent());
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }

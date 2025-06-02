@@ -1,7 +1,7 @@
 package com.grepp.spring.infra.config;
 
-import com.grepp.spring.app.model.auth.RefreshTokenRepository;
-import com.grepp.spring.app.model.auth.entity.RefreshToken;
+import com.grepp.spring.app.model.auth.token.RefreshTokenRepository;
+import com.grepp.spring.app.model.auth.token.entity.RefreshToken;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

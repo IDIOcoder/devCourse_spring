@@ -1,11 +1,13 @@
 package com.grepp.spring.infra.auth.token;
 
-import com.grepp.spring.app.model.auth.RefreshTokenRepository;
-import com.grepp.spring.app.model.auth.entity.RefreshToken;
+import com.grepp.spring.app.model.auth.token.RefreshTokenRepository;
+import com.grepp.spring.app.model.auth.token.UserBlackListRepository;
+import com.grepp.spring.app.model.auth.token.entity.RefreshToken;
+import com.grepp.spring.app.model.auth.token.entity.UserBlackList;
 import com.grepp.spring.infra.error.exceptions.CommonException;
 import com.grepp.spring.infra.response.ResponseCode;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -28,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserBlackListRepository userBlackListRepository;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -35,6 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         String requestAccessToken = resolveToken(request, TokenType.ACCESS_TOKEN);
         if (requestAccessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
+        Claims claims = jwtProvider.parseClaim(requestAccessToken);
+        if(userBlackListRepository.existsById(claims.getSubject())){
             filterChain.doFilter(request, response);
             return;
         }
@@ -90,6 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         RefreshToken storedRefreshToken = optional.get();
         if (!storedRefreshToken.getToken().equals(refreshToken)) {
+            userBlackListRepository.save(new UserBlackList(authentication.getName()));
             throw new CommonException(ResponseCode.SECURITY_INCIDENT);
         }
         
