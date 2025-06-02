@@ -1,6 +1,7 @@
 package com.grepp.spring.infra.error;
 
 import com.grepp.spring.infra.error.exceptions.CommonException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -13,6 +14,11 @@ public class WebExceptionAdvice {
     public String webExceptionHandler(CommonException ex, Model model) {
         model.addAttribute("message", ex.code().message());
         return "error/redirect";
+    }
+    
+    @ExceptionHandler(BadCredentialsException.class)
+    public String badCredentialsExHandler(BadCredentialsException ex, Model model){
+        return "member/signin?error";
     }
     
     @ExceptionHandler(AuthorizationDeniedException.class)

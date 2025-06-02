@@ -72,7 +72,7 @@ public class JwtProvider {
         String accessToken = Jwts.builder()
                    .subject(authentication.getName())
                    .id(id)
-                   .claim("auth",authorities)
+                   .claim("auth", authorities)
                    .expiration(atExpiresIn)
                    .signWith(getSecretKey())
                    .compact();
