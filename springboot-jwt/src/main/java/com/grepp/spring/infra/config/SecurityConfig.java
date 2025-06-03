@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -88,7 +89,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2Login(Customizer.withDefaults())
+            //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 (requests) -> requests
                                   .requestMatchers(GET, "/", "/error", "/favicon.ico", "/css/**", "/img/**","/js/**","/download/**").permitAll()
@@ -98,10 +100,10 @@ public class SecurityConfig {
                                   .requestMatchers(POST, "/member/signin", "/member/signup", "/member/verify").permitAll()
                                   .requestMatchers(POST, "/auth/signin").permitAll()
                                   .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class)
-            .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+            );
+            //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            //.addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class)
+            //.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
         return http.build();
     }
     
