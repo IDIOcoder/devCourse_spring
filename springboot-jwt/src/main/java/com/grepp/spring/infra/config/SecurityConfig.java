@@ -3,6 +3,7 @@ package com.grepp.spring.infra.config;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import com.grepp.spring.infra.auth.oauth2.OAuth2SuccessHandler;
 import com.grepp.spring.infra.auth.token.AuthExceptionFilter;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationEntryPoint;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationFilter;
@@ -10,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -36,6 +39,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -46,6 +52,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthExceptionFilter authExceptionFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     
     @Value("${remember-me.key}")
     private String rememberMeKey;
@@ -86,11 +93,12 @@ public class SecurityConfig {
         // ** : 모든 depth 의 모든 경로
         // Security Config 에는 인증과 관련된 설정만 지정 (PermitAll or Authenticated)
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
-            .oauth2Login(Customizer.withDefaults())
-            //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2Login(oauth -> oauth.successHandler(oAuth2SuccessHandler))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 (requests) -> requests
                                   .requestMatchers(GET, "/", "/error", "/favicon.ico", "/css/**", "/img/**","/js/**","/download/**").permitAll()
@@ -100,10 +108,9 @@ public class SecurityConfig {
                                   .requestMatchers(POST, "/member/signin", "/member/signup", "/member/verify").permitAll()
                                   .requestMatchers(POST, "/auth/signin").permitAll()
                                   .anyRequest().authenticated()
-            );
-            //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            //.addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class)
-            //.exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
     
@@ -116,5 +123,21 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+    
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOriginPatterns(Collections.singletonList(
+            "http://localhost:8081"
+        ));
+        
+        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST"));
+        corsConfig.setAllowedHeaders(Collections.singletonList("*"));
+        corsConfig.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
     }
 }

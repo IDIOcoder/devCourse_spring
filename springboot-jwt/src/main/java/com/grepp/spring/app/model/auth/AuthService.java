@@ -43,12 +43,15 @@ public class AuthService {
         // loadUserByUsername + password 검증 후 authentication 반환
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
+        return processTokenSignin(username);
+    }
+    
+    public TokenDto processTokenSignin(String username) {
         // 블랙리스트에서 제거
         userBlackListRepository.deleteById(username);
         
-        AccessTokenDto dto = jwtProvider.generateAccessToken(authentication);
-        RefreshToken refreshToken = new RefreshToken(authentication.getName(), dto.getId());
+        AccessTokenDto dto = jwtProvider.generateAccessToken(username);
+        RefreshToken refreshToken = new RefreshToken(username, dto.getId());
         refreshTokenRepository.save(refreshToken);
         
         return TokenDto.builder()

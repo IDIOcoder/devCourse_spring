@@ -54,8 +54,10 @@ public class AuthController {
     ){
         ResponseCookie expiredAccessToken = TokenCookieFactory.createExpiredToken(TokenType.ACCESS_TOKEN);
         ResponseCookie expiredRefreshToken = TokenCookieFactory.createExpiredToken(TokenType.REFRESH_TOKEN);
+        ResponseCookie expiredAuthSessionId = TokenCookieFactory.createExpiredToken(TokenType.AUTH_SERVER_SESSION_ID);
         response.addHeader("Set-Cookie", expiredAccessToken.toString());
         response.addHeader("Set-Cookie", expiredRefreshToken.toString());
+        response.addHeader("Set-Cookie", expiredAuthSessionId.toString());
         return ResponseEntity.ok(ApiResponse.noContent());
     }
     

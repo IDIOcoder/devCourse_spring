@@ -65,19 +65,19 @@ public class JwtProvider {
     }
     
     public AccessTokenDto generateAccessToken(Authentication authentication){
-        String authorities = authentication.getAuthorities().stream()
-                                 .map(GrantedAuthority::getAuthority)
-                                 .collect(Collectors.joining(","));
-        
+        return generateAccessToken(authentication.getName());
+    }
+    
+    public AccessTokenDto generateAccessToken(String username){
         String id = UUID.randomUUID().toString();
         long now = new Date().getTime();
         Date atExpiresIn = new Date(now + atExpiration);
         String accessToken = Jwts.builder()
-                   .subject(authentication.getName())
-                   .id(id)
-                   .expiration(atExpiresIn)
-                   .signWith(getSecretKey())
-                   .compact();
+                                 .subject(username)
+                                 .id(id)
+                                 .expiration(atExpiresIn)
+                                 .signWith(getSecretKey())
+                                 .compact();
         
         return AccessTokenDto.builder()
                    .id(id)
