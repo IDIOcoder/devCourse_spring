@@ -51,7 +51,7 @@ class SecurityConfig {
             OAuth2AuthorizationServerConfigurer.authorizationServer()
 
         http
-            .cors { it.configurationSource(corsConfigurationSource()) }
+            .cors{it.configurationSource(corsConfigurationSource())}
             .securityMatcher(authorizationServerConfigurer.endpointsMatcher)
             .with<OAuth2AuthorizationServerConfigurer>(
                 authorizationServerConfigurer
@@ -74,22 +74,6 @@ class SecurityConfig {
     }
 
     @Bean
-    fun corsConfigurationSource():CorsConfigurationSource{
-        val corsConfig = CorsConfiguration()
-        corsConfig.setAllowedOriginPatterns(listOf(
-            "http://localhost:8080"
-        ))
-
-        corsConfig.allowedMethods = listOf("GET","POST")
-        corsConfig.allowedHeaders = listOf("*")
-        corsConfig.allowCredentials = true
-
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", corsConfig)
-        return source
-    }
-
-    @Bean
     @Order(2)
     @Throws(Exception::class)
     fun defaultSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -100,6 +84,7 @@ class SecurityConfig {
                 }
             )
             .formLogin(Customizer.withDefaults())
+
         return http.build()
     }
 
@@ -154,6 +139,22 @@ class SecurityConfig {
         return AuthorizationServerSettings.builder().build()
     }
 
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val corsConfig = CorsConfiguration()
+        corsConfig.setAllowedOriginPatterns(
+            listOf(
+                "http://localhost:8080"
+            )
+        )
+        corsConfig.allowedMethods = mutableListOf("GET", "POST")
+        corsConfig.allowedHeaders = listOf("*")
+        corsConfig.allowCredentials = true
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", corsConfig)
+        return source
+    }
+
     companion object {
         private fun generateRsaKey(): KeyPair {
             val keyPair: KeyPair
@@ -167,15 +168,4 @@ class SecurityConfig {
             return keyPair
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 }
