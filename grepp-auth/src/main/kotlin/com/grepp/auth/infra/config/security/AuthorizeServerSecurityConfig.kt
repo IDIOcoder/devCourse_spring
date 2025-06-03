@@ -30,6 +30,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
@@ -48,6 +51,7 @@ class SecurityConfig {
             OAuth2AuthorizationServerConfigurer.authorizationServer()
 
         http
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .securityMatcher(authorizationServerConfigurer.endpointsMatcher)
             .with<OAuth2AuthorizationServerConfigurer>(
                 authorizationServerConfigurer
@@ -67,6 +71,22 @@ class SecurityConfig {
             }
 
         return http.build()
+    }
+
+    @Bean
+    fun corsConfigurationSource():CorsConfigurationSource{
+        val corsConfig = CorsConfiguration()
+        corsConfig.setAllowedOriginPatterns(listOf(
+            "http://localhost:8080"
+        ))
+
+        corsConfig.allowedMethods = listOf("GET","POST")
+        corsConfig.allowedHeaders = listOf("*")
+        corsConfig.allowCredentials = true
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", corsConfig)
+        return source
     }
 
     @Bean
@@ -147,4 +167,15 @@ class SecurityConfig {
             return keyPair
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 }
