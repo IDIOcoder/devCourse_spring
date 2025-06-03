@@ -57,7 +57,5 @@ public class AuthExceptionFilter extends OncePerRequestFilter {
         
         handlerExceptionResolver.resolveException(request, response, null,
             new AuthWebException(code));
-        
-        
     }
 }
