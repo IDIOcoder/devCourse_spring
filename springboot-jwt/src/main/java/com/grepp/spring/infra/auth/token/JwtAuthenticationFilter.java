@@ -55,11 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         Claims claims = jwtProvider.parseClaim(requestAccessToken);
-
-        if(request.getRequestURI().equals("/auth/logout")){
-            refreshTokenService.deleteByAccessTokenId(claims.getId());
-        }
-        
         if(userBlackListRepository.existsById(claims.getSubject())){
             filterChain.doFilter(request, response);
             return;

@@ -2,6 +2,7 @@ package com.grepp.spring.infra.auth.oauth2;
 
 import com.grepp.spring.app.model.auth.AuthService;
 import com.grepp.spring.app.model.auth.token.dto.TokenDto;
+import com.grepp.spring.infra.auth.oauth2.user.OAuth2UserInfo;
 import com.grepp.spring.infra.auth.token.TokenCookieFactory;
 import com.grepp.spring.infra.auth.token.TokenType;
 import jakarta.servlet.ServletException;
@@ -28,7 +29,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Authentication authentication) throws IOException, ServletException {
         
         OAuth2User user = (OAuth2User) authentication.getPrincipal();
-        TokenDto dto = authService.processTokenSignin(user.getName());
+        OAuth2UserInfo userInfo = OAuth2UserInfo.create(request.getRequestURI(), user);
+        TokenDto dto = authService.processTokenSignin(userInfo.getName());
         
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(TokenType.ACCESS_TOKEN.name(),
             dto.getAccessToken(), dto.getAtExpiresIn());

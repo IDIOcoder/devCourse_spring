@@ -5,6 +5,7 @@ import static org.springframework.http.HttpMethod.POST;
 
 import com.grepp.spring.infra.auth.oauth2.OAuth2SuccessHandler;
 import com.grepp.spring.infra.auth.token.AuthExceptionFilter;
+import com.grepp.spring.infra.auth.token.LogoutFilter;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationEntryPoint;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationFilter;
 import jakarta.servlet.ServletException;
@@ -14,29 +15,19 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -53,15 +44,7 @@ public class SecurityConfig {
     private final AuthExceptionFilter authExceptionFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    
-    @Value("${remember-me.key}")
-    private String rememberMeKey;
-    
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                   .build();
-    }
+    private final LogoutFilter logoutFilter;
     
     @Bean
     public AuthenticationSuccessHandler successHandler(){
@@ -97,7 +80,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
-            .oauth2Login(oauth -> oauth.successHandler(oAuth2SuccessHandler))
+            .oauth2Login(oauth ->
+                             oauth.successHandler(oAuth2SuccessHandler)
+            )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 (requests) -> requests
@@ -110,6 +95,7 @@ public class SecurityConfig {
                                   .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(logoutFilter, JwtAuthenticationFilter.class)
             .addFilterBefore(authExceptionFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
