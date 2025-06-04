@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-open class BaseEntity {
+class BaseEntity {
     protected var activated: Boolean = true
 
     @CreatedDate

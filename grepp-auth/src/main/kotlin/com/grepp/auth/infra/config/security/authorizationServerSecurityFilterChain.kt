@@ -90,17 +90,6 @@ class SecurityConfig {
     }
 
     @Bean
-    fun userDetailsService(): UserDetailsService {
-        val userDetails: UserDetails = User.withDefaultPasswordEncoder()
-            .username("test")
-            .password("123qwe!@#")
-            .roles("USER")
-            .build()
-
-        return InMemoryUserDetailsManager(userDetails)
-    }
-
-    @Bean
     fun registeredClientRepository(): RegisteredClientRepository {
         val grepp = RegisteredClient.withId(UUID.randomUUID().toString())
             .clientId("grepp")
