@@ -1,16 +1,18 @@
 package com.grepp.auth.app.model.member.entity
 
-import com.grepp.spring.infra.entity.BaseEntity
+import com.grepp.auth.infra.entity.BaseEntity
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import java.time.LocalDateTime
 
 @Entity
-class MemberInfo : BaseEntity() {
+class MemberInfo(
     @Id
-    private val userId: String? = null
-    private val loginDate: LocalDateTime? = null
-    private val modifyDate: LocalDateTime? = null
-    private val leaveDate: LocalDateTime? = null
-    private val rentableDate: LocalDateTime = LocalDateTime.now()
+    val userId: String,
+    var loginDate: LocalDateTime? = null,
+    var modifyDate: LocalDateTime? = null,
+    var leaveDate: LocalDateTime? = null,
+    var rentableDate: LocalDateTime = LocalDateTime.now()
+) : BaseEntity() {
+
 }
