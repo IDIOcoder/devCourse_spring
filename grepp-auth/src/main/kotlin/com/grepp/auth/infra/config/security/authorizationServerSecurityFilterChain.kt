@@ -78,12 +78,13 @@ class SecurityConfig {
     @Throws(Exception::class)
     fun defaultSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .cors{it.configurationSource(corsConfigurationSource())}
             .authorizeHttpRequests(
                 Customizer {
                     it.anyRequest().authenticated()
                 }
             )
-            .formLogin(Customizer.withDefaults())
+            .formLogin(){it.defaultSuccessUrl("http://localhost:8080")}
 
         return http.build()
     }
