@@ -1,26 +1,29 @@
 package com.grepp.spring.app.model.member.entity
 
-import com.grepp.spring.app.model.auth.code.Role
+import com.grepp.spring.app.model.member.code.Role
 import com.grepp.spring.infra.entity.BaseEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class Member : BaseEntity() {
+class Member(
     @Id
-    private val userId: String? = null
-    private val password: String? = null
-    private val email: String? = null
+    val userId: String,
+    val password: String,
+    val email: String,
 
     @Enumerated(EnumType.STRING)
-    private val role: Role? = null
-    private val tel: String? = null
+    val role: Role,
+    val tel: String,
 
     @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "userId")
-    private val info: MemberInfo? = null
+    val info: MemberInfo? = null,
+) : BaseEntity() {
 
-    fun updateLoginedAt(time: LocalDateTime?) {
-        info.setLoginDate(time)
+    fun updateLoginedAt(time: LocalDateTime) {
+        info?.let{
+            it.loginDate=time
+        }
     }
 }

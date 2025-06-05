@@ -8,11 +8,11 @@ import java.time.LocalDateTime
 @Entity
 class MemberInfo(
     @Id
-    private val userId: String,
-    private var loginDate: LocalDateTime = LocalDateTime.now(),
-    private var modifyDate: LocalDateTime? = null,
-    private var leaveDate: LocalDateTime? = null,
-    private var rentableDate: LocalDateTime = LocalDateTime.now()
+    val userId: String,
+    var loginDate: LocalDateTime = LocalDateTime.now(),
+    var modifyDate: LocalDateTime? = null,
+    var leaveDate: LocalDateTime? = null,
+    var rentableDate: LocalDateTime = LocalDateTime.now()
 ) : BaseEntity() {
 
 }
