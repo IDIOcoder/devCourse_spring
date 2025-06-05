@@ -1,4 +1,4 @@
-package com.grepp.spring.infra.auth.token;
+package com.grepp.spring.infra.auth.token.filter;
 
 import com.grepp.spring.infra.error.exceptions.AuthApiException;
 import com.grepp.spring.infra.error.exceptions.AuthWebException;

@@ -1,10 +1,13 @@
-package com.grepp.spring.infra.auth.token;
+package com.grepp.spring.infra.auth.token.filter;
 
 import com.grepp.spring.app.model.auth.token.RefreshTokenService;
 import com.grepp.spring.app.model.auth.token.UserBlackListRepository;
 import com.grepp.spring.app.model.auth.token.dto.AccessTokenDto;
 import com.grepp.spring.app.model.auth.token.entity.RefreshToken;
 import com.grepp.spring.app.model.auth.token.entity.UserBlackList;
+import com.grepp.spring.infra.auth.token.JwtProvider;
+import com.grepp.spring.infra.auth.token.TokenCookieFactory;
+import com.grepp.spring.infra.auth.token.code.TokenType;
 import com.grepp.spring.infra.error.exceptions.CommonException;
 import com.grepp.spring.infra.response.ResponseCode;
 import io.jsonwebtoken.Claims;
@@ -37,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         List<String> excludePath = new ArrayList<>();
         excludePath.addAll(List.of("/error", "/favicon.ico", "/css", "/img","/js","/download"));
-        excludePath.addAll(List.of("/member/signup", "/member/signin", "/auth/signin"));
+        excludePath.addAll(List.of("/member/signup", "/member/signin"));
         String path = request.getRequestURI();
         return excludePath.stream().anyMatch(path::startsWith);
     }
