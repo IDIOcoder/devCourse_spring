@@ -22,15 +22,14 @@ class InternalAuthFilter(
 
         val userId = request.getHeader("x-member-id")
         val roles = request.getHeader("x-member-role")
-        val authorities:Set<SimpleGrantedAuthority> = userDetailsService.findAuthorities(userId)
+        val authorities:MutableSet<SimpleGrantedAuthority> = userDetailsService.findAuthorities(userId)
 
         userId ?: return
         roles?.let{
-            authorities + SimpleGrantedAuthority(it)
+            authorities += SimpleGrantedAuthority(it)
         }
         val authentication = UsernamePasswordAuthenticationToken(userId,null, authorities)
         SecurityContextHolder.getContext().authentication = authentication
         filterChain.doFilter(request, response)
     }
-
 }

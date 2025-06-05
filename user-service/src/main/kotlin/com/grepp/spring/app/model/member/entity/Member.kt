@@ -18,7 +18,7 @@ class Member(
 
     @OneToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "userId")
-    val info: MemberInfo? = null,
+    var info: MemberInfo? = null,
 ) : BaseEntity() {
 
     fun updateLoginedAt(time: LocalDateTime) {

@@ -46,27 +46,14 @@ class SecurityConfig(
                             "/js/**",
                             "/download/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/book/list").permitAll()
                         .requestMatchers(
-                            HttpMethod.GET,
-                            "/api/book/list",
-                            "/api/member/exists/*",
-                            "/api/ai/**"
-                        ).permitAll()
-                        .requestMatchers(
-                            HttpMethod.GET,
                             "/member/signup",
                             "/member/signup/*",
                             "/member/signin"
                         ).permitAll()
                         .requestMatchers(
-                            HttpMethod.GET,
-                            "/member/signin",
-                            "/member/signup",
-                            "/member/verify"
-                        ).hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/auth/signin")
-                        .permitAll()
+                            HttpMethod.POST,"/member/verify"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 }
             )

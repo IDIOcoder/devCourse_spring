@@ -50,6 +50,10 @@ kotlin {
     }
 }
 
+noArg{
+    annotation("com.grepp.spring.infra.annotation.NoArgsConstructor")
+}
+
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
