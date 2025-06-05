@@ -1,9 +1,8 @@
 package com.grepp.spring.app.model.auth.token.dto;
 
-import com.grepp.spring.infra.auth.token.GrantType;
+import com.grepp.spring.infra.auth.token.code.GrantType;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 @Data
 @Builder

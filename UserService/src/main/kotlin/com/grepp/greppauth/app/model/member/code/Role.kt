@@ -1,6 +1,0 @@
-package com.grepp.greppauth.app.model.member.code
-
-enum class Role {
-    ROLE_USER,
-    ROLE_ADMIN
-}

@@ -2,6 +2,7 @@ package com.grepp.spring.infra.auth.token;
 
 import static org.springframework.http.ResponseCookie.from;
 
+import com.grepp.spring.infra.auth.token.code.TokenType;
 import org.springframework.http.ResponseCookie;
 
 public class TokenCookieFactory {

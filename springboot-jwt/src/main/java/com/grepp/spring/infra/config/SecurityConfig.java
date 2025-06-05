@@ -3,11 +3,12 @@ package com.grepp.spring.infra.config;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import com.grepp.spring.infra.auth.oauth2.OAuth2FailureHandler;
 import com.grepp.spring.infra.auth.oauth2.OAuth2SuccessHandler;
-import com.grepp.spring.infra.auth.token.AuthExceptionFilter;
-import com.grepp.spring.infra.auth.token.LogoutFilter;
+import com.grepp.spring.infra.auth.token.filter.AuthExceptionFilter;
+import com.grepp.spring.infra.auth.token.filter.LogoutFilter;
 import com.grepp.spring.infra.auth.token.JwtAuthenticationEntryPoint;
-import com.grepp.spring.infra.auth.token.JwtAuthenticationFilter;
+import com.grepp.spring.infra.auth.token.filter.JwtAuthenticationFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,6 +45,7 @@ public class SecurityConfig {
     private final AuthExceptionFilter authExceptionFilter;
     private final JwtAuthenticationEntryPoint entryPoint;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
     private final LogoutFilter logoutFilter;
     
     @Bean
@@ -82,6 +84,8 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .oauth2Login(oauth ->
                              oauth.successHandler(oAuth2SuccessHandler)
+                                 .failureHandler(oAuth2FailureHandler)
+                            
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(

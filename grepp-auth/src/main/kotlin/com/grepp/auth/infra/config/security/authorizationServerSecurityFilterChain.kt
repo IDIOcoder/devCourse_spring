@@ -59,9 +59,10 @@ class SecurityConfig {
                 authorizationServer
                     .oidc(Customizer.withDefaults())
             } // Enable OpenID Connect 1.0
-
             .authorizeHttpRequests(
-                Customizer { it.anyRequest().authenticated() }
+                Customizer { it
+                    .anyRequest()
+                    .authenticated() }
             )
             .exceptionHandling {
                 it.defaultAuthenticationEntryPointFor(

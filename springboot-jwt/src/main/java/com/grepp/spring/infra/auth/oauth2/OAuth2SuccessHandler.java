@@ -4,7 +4,7 @@ import com.grepp.spring.app.model.auth.AuthService;
 import com.grepp.spring.app.model.auth.token.dto.TokenDto;
 import com.grepp.spring.infra.auth.oauth2.user.OAuth2UserInfo;
 import com.grepp.spring.infra.auth.token.TokenCookieFactory;
-import com.grepp.spring.infra.auth.token.TokenType;
+import com.grepp.spring.infra.auth.token.code.TokenType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
