@@ -28,11 +28,7 @@ spring:
               filters:
                 - AddRequestHeader=x-member-id,test
                 - AddRequestHeader=x-member-role,ROLE_ADMIN
-            - id: auth_service
-              uri: http://localhost:8082
-              predicates:
-                - Path=/auth/**
-                - Path=/oauth2/**
+
 logging:
   level:
     root: info
