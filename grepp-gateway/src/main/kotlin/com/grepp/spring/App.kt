@@ -1,4 +1,4 @@
-package com.grepp.gateway
+package com.grepp.spring
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
