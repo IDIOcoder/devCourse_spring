@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class TokenResponse {
     private String accessToken;
+    private String refreshToken;
     private GrantType grantType;
     private Long expiresIn;
 }

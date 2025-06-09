@@ -27,9 +27,10 @@ class SecurityConfig(
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
-            .formLogin { obj: FormLoginConfigurer<HttpSecurity> -> obj.disable() }
-            .httpBasic { obj: HttpBasicConfigurer<HttpSecurity> -> obj.disable() }
+            .csrf { it.disable() }
+            .formLogin { it.disable() }
+            .httpBasic { it.disable() }
+            .logout { it.disable() }
             .sessionManagement { session: SessionManagementConfigurer<HttpSecurity?> ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
