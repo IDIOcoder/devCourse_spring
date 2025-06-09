@@ -28,6 +28,8 @@ repositories {
 extra["springCloudVersion"] = "2025.0.0"
 
 dependencies {
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.modelmapper:modelmapper:3.2.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")

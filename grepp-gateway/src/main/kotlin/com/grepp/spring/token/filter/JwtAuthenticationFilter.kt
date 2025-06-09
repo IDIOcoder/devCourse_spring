@@ -2,14 +2,17 @@ package com.grepp.spring.token.filter
 
 import com.grepp.spring.infra.error.exceptions.CommonException
 import com.grepp.spring.infra.response.ResponseCode
+import com.grepp.spring.token.code.GrantType
 import com.grepp.spring.token.code.TokenType
-import com.grepp.spring.token.domain.JwtProvider
-import com.grepp.spring.token.domain.TokenCookieFactory
+import com.grepp.spring.token.util.JwtProvider
+import com.grepp.spring.token.util.TokenCookieFactory
 import com.grepp.spring.token.dto.AccessTokenDto
+import com.grepp.spring.token.dto.TokenDto
 import com.grepp.spring.token.entity.RefreshToken
 import com.grepp.spring.token.entity.UserBlackList
 import com.grepp.spring.token.repository.UserBlackListRepository
 import com.grepp.spring.token.service.RefreshTokenService
+import com.grepp.spring.token.util.TokenResponseExecutor
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
@@ -88,20 +91,15 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse, newAccessToken: AccessTokenDto,
         newRefreshToken: RefreshToken
     ) {
-        val accessTokenCookie: ResponseCookie =
-            TokenCookieFactory.create(
-                TokenType.ACCESS_TOKEN.name, newAccessToken.token,
-                jwtProvider.rtExpiration
-            )
+        val tokenDto = TokenDto(
+            accessToken = newAccessToken.token,
+            refreshToken = newRefreshToken.token,
+            grantType = GrantType.BEARER,
+            atExpiresIn = jwtProvider.atExpiration,
+            rtExpiresIn = jwtProvider.rtExpiration
+        )
 
-        val refreshTokenCookie: ResponseCookie =
-            TokenCookieFactory.create(
-                TokenType.REFRESH_TOKEN.name, newRefreshToken.token,
-                jwtProvider.rtExpiration
-            )
-
-        response.addHeader("Set-Cookie", accessTokenCookie.toString())
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString())
+        TokenResponseExecutor.response(response, tokenDto)
     }
 
     private fun renewingRefreshToken(id: String, newTokenId: String): RefreshToken {

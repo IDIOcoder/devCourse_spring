@@ -1,4 +1,4 @@
-package com.grepp.spring.token.domain
+package com.grepp.spring.token.util
 
 import com.grepp.spring.token.code.TokenType
 import com.grepp.spring.token.dto.AccessTokenDto

@@ -1,7 +1,7 @@
 package com.grepp.spring.token.service
 
 import com.grepp.spring.token.code.GrantType
-import com.grepp.spring.token.domain.JwtProvider
+import com.grepp.spring.token.util.JwtProvider
 import com.grepp.spring.token.dto.AccessTokenDto
 import com.grepp.spring.token.dto.TokenDto
 import com.grepp.spring.token.entity.RefreshToken
