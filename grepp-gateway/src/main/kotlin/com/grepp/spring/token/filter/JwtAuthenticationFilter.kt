@@ -72,7 +72,7 @@ class JwtAuthenticationFilter(
             if (jwtProvider.validateToken(requestAccessToken)) {
                 request.setAttribute("x-member-id", claims.subject)
                 // fixme accesstoken 발행 시 권한 추가
-                request.setAttribute("x-member-role", "ROLE_USER")
+                request.setAttribute("x-member-role", claims["roles"])
             }
         } catch (ex: ExpiredJwtException) {
             val newAccessToken: AccessTokenDto? = renewingAccessToken(requestAccessToken, request)
@@ -80,7 +80,7 @@ class JwtAuthenticationFilter(
 
             val newRefreshToken = renewingRefreshToken(claims.id, newAccessToken.id)
             request.setAttribute("x-member-id", claims.subject)
-            request.setAttribute("x-member-role", "ROLE_USER")
+            request.setAttribute("x-member-role", claims["roles"])
             responseToken(response, newAccessToken, newRefreshToken)
         } finally {
             filterChain.doFilter(request, response)
@@ -123,6 +123,6 @@ class JwtAuthenticationFilter(
             throw CommonException(ResponseCode.SECURITY_INCIDENT)
         }
 
-        return jwtProvider.generateAccessToken(claims.subject)
+        return jwtProvider.generateAccessToken(claims.subject, claims["roles"].toString())
     }
 }

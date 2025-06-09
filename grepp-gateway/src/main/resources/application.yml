@@ -38,6 +38,7 @@ spring:
               filters:
                 - AddRequestHeader=x-member-id,test
                 - AddRequestHeader=x-member-role,ROLE_ADMIN
+
 logging:
   level:
     root: info

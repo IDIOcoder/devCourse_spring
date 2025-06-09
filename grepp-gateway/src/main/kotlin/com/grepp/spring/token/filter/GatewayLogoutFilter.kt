@@ -35,7 +35,7 @@ class GatewayLogoutFilter(
         val path = request.requestURI
         val claims: Claims = jwtProvider.parseClaim(accessToken)
 
-        if (path == "/auth/logout") {
+        if (path == "/logout") {
             refreshTokenService.deleteByAccessTokenId(claims.id)
             val expiredAccessToken: ResponseCookie =
                 TokenCookieFactory.createExpiredToken(TokenType.ACCESS_TOKEN)

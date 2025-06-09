@@ -41,16 +41,17 @@ class JwtProvider(
         }
 
     fun generateAccessToken(authentication: Authentication): AccessTokenDto {
-        return generateAccessToken(authentication.name)
+        return generateAccessToken(authentication.name, authentication.authorities.joinToString(","))
     }
 
-    fun generateAccessToken(username: String?): AccessTokenDto {
+    fun generateAccessToken(username: String, roles: String): AccessTokenDto {
         val id = UUID.randomUUID().toString()
         val now = Date().time
         val atExpiresIn = Date(now + atExpiration)
         val accessToken = Jwts.builder()
             .subject(username)
             .id(id)
+            .claim("roles", roles)
             .expiration(atExpiresIn)
             .signWith(secretKey)
             .compact()
