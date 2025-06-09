@@ -26,7 +26,7 @@ class OAuth2SuccessHandler(
         val user = authentication.principal as OAuth2User
         val userInfo = OAuth2UserInfo.create(path, user)
 
-        val tokenDto = authService.processTokenSignin(userInfo.name)
+        val tokenDto = authService.processTokenSignin(userInfo!!.name)
         userBlackListRepository.deleteById(userInfo.name)
         TokenResponseExecutor.response(response, tokenDto)
         redirectStrategy.sendRedirect(request,response,"/")
