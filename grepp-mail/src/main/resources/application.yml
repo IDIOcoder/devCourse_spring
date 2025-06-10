@@ -1,0 +1,47 @@
+app:
+  domain: http://localhost:8080
+
+server:
+  port: 8083
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+logging:
+  level:
+    root: info
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql: trace
+      springframework:
+        cloud:
+          openfeign: trace
+        client:
+          RestTemplate: debug
+        security: debug
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    username: azimemory@gmail.com
+    password: wgukfuhmtfqmtwig
+    properties:
+      mail:
+        stmp:
+          auth: true
+        smtp:
+          starttls:
+            enable: true
+  data:
+    redis:
+      host: redis-19155.c62.us-east-1-4.ec2.redns.redis-cloud.com
+      username: default
+      password: cOhk8PAHKxBWOMZ7v08o2jV5wiMOlkUx
+      port: 19155
+      ssl:
+        enabled: true
