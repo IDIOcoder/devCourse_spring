@@ -3,6 +3,7 @@ package com.grepp.spring.infra.feign.config
 import feign.RequestInterceptor
 import feign.RequestTemplate
 import org.slf4j.LoggerFactory
+import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

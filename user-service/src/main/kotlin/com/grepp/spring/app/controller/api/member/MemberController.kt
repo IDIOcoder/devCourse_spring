@@ -4,6 +4,7 @@ import com.grepp.spring.app.controller.api.member.payload.MemberDetailResponse
 import com.grepp.spring.app.controller.api.member.payload.SignupRequest
 import com.grepp.spring.app.model.member.MemberService
 import com.grepp.spring.infra.response.ApiResponse
+import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -20,14 +21,27 @@ class MemberController(
     private val memberService: MemberService
 ) {
 
-    @PostMapping("add")
+    @GetMapping("add/{token}")
     fun signup(
-        @Valid
-        @RequestBody
-        request:SignupRequest
+        @PathVariable
+        token:String,
+        session:HttpSession
     ):ResponseEntity<ApiResponse<Unit>>{
+        val request = session.getAttribute(token) as SignupRequest
         memberService.signup(request)
         return ResponseEntity.ok(ApiResponse.noContent())
+    }
+
+    @PostMapping("verify")
+    fun verify(
+        @Valid
+        request:SignupRequest,
+        session:HttpSession
+    ):ResponseEntity<ApiResponse<Unit>>{
+        val token = session.id
+        session.setAttribute(token, request)
+        memberService.verify(token, request)
+        return ResponseEntity.ok(ApiResponse.noContent());
     }
 
     @GetMapping("exists/{id}")

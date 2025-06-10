@@ -54,7 +54,6 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         log.info(request.requestURI)
-
         val requestAccessToken = jwtProvider.resolveToken(request, TokenType.ACCESS_TOKEN)
 
         if(requestAccessToken == null) {
@@ -62,7 +61,12 @@ class JwtAuthenticationFilter(
             return
         }
 
-        val claims: Claims = jwtProvider.parseClaim(requestAccessToken)
+        val claims = jwtProvider.parseClaim(requestAccessToken)
+        if (claims == null) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         if (userBlackListRepository.existsById(claims.subject)) {
             filterChain.doFilter(request, response)
             return
@@ -112,7 +116,7 @@ class JwtAuthenticationFilter(
     ): AccessTokenDto? {
         val refreshToken: String? = jwtProvider.resolveToken(request, TokenType.REFRESH_TOKEN)
 
-        val claims: Claims = jwtProvider.parseClaim(requestAccessToken)
+        val claims: Claims = jwtProvider.parseClaim(requestAccessToken)!!
 
         val storedRefreshToken: RefreshToken =
             refreshTokenService.findByAccessTokenId(claims.id)

@@ -10,15 +10,19 @@ import org.springframework.web.servlet.function.*
 
 fun handlerFilterFnc() : HandlerFilterFunction<ServerResponse, ServerResponse>{
     return HandlerFilterFunction { request, next ->
-        val userId = request.attributes()["x-member-id"].toString() ?: "ANONYMOUS"
-        val role = request.attributes()["x-member-role"].toString() ?: "ROLE_ANONYMOUS"
+        val memberId = request.headers().header("x-member-id")
+        if(memberId.isEmpty()) {
+            val userId = request.attributes()["x-member-id"].toString() ?: "ANONYMOUS"
+            val role = request.attributes()["x-member-role"].toString() ?: "ROLE_ANONYMOUS"
 
-        val modified = ServerRequest.from(request)
-            .header("x-member-id", userId)
-            .header("x-member-role", role)
-            .build()
+            val modified = ServerRequest.from(request)
+                .header("x-member-id", userId)
+                .header("x-member-role", role)
+                .build()
 
-        next.handle(modified)
+            next.handle(modified)
+        }
+        next.handle(ServerRequest.from(request).build())
     }
 }
 
@@ -30,8 +34,9 @@ class RouteConfiguration{
         return route("general-route")
             .GET("/**", http())
             .POST("/**", http())
-            .filter(handlerFilterFnc() )
+            .filter(handlerFilterFnc())
             .before(uri("http://localhost:8082"))
+            .before(uri("http://localhost:8083"))
             .build()
     }
 }

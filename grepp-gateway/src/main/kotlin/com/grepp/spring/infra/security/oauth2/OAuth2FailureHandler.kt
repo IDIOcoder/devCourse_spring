@@ -23,7 +23,7 @@ class OAuth2FailureHandler(
     ) {
 
         val requestAccessToken = jwtProvider.resolveToken(request, TokenType.ACCESS_TOKEN) ?: return
-        val claims = jwtProvider.parseClaim(requestAccessToken)
+        val claims = jwtProvider.parseClaim(requestAccessToken) ?: return
 
         refreshTokenService.deleteByAccessTokenId(claims.id)
         TokenResponseExecutor.clear(response)

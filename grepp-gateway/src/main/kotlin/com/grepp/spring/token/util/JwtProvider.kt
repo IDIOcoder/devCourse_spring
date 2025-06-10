@@ -63,12 +63,15 @@ class JwtProvider(
         )
     }
 
-    fun parseClaim(accessToken: String?): Claims {
+    fun parseClaim(accessToken: String?): Claims? {
         return try {
             Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(accessToken).payload
         } catch (ex: ExpiredJwtException) {
             ex.claims
+        } catch (ex: Exception){
+            log.info(ex.message, ex)
+            return null
         }
     }
 

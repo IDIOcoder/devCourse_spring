@@ -31,17 +31,15 @@ spring:
               uri: http://localhost:8081
               predicates:
                 - Path=/auth/**
+            - id: mail_service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/mail/**
             - id: user_service
               uri: http://localhost:8082
               predicates:
                 - Path=/api/member/**
-    loadbalancer:
-      clients:
-        - name: chat-service # 이 이름은 위 'uri'의 'chat-service'와 반드시 일치해야 합니다.
-          static:
-            instances:
-              - uri: "ws://localhost:9091"
-              - uri: "ws://localhost:9092"
+
 
 logging:
   level:
@@ -54,6 +52,6 @@ logging:
         security: trace
 
 jwt:
-  secrete: sskfjsasdkfsdklfjwioesdfjslkdfjsdlkfjsdlf
+  secrete: sskfjsasdkfsdklfjwioesdfjslkdfjsdlkfjsdlfsdljfqweqdfasdfwet
   access-expiration: 3000
   refresh-expiration: 604800000
