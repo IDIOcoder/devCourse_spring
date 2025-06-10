@@ -7,10 +7,13 @@ import com.grepp.spring.app.model.member.dto.SmtpDto
 import com.grepp.spring.app.model.member.entity.Member
 import com.grepp.spring.app.model.member.entity.MemberInfo
 import com.grepp.spring.infra.error.exceptions.CommonException
+import com.grepp.spring.infra.event.Outbox
+import com.grepp.spring.infra.event.OutboxRepository
 import com.grepp.spring.infra.feign.client.MailApi
 import com.grepp.spring.infra.response.ResponseCode
 import org.modelmapper.ModelMapper
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +24,8 @@ class MemberService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val mapper: ModelMapper,
-    private val mailApi: MailApi
+    private val mailApi: MailApi,
+    private val outboxRepository: OutboxRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -38,6 +42,12 @@ class MemberService(
         val memberInfo = MemberInfo(request.userId)
         member.info = memberInfo
         memberRepository.save(member)
+
+        val outbox = Outbox(
+            eventType = "signup-complete",
+            payload = member.email
+        )
+        outboxRepository.save(outbox)
     }
 
     fun checkId(id: String): Boolean {

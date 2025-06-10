@@ -29,6 +29,15 @@ class MailTemplate(
         }
     }
 
+    fun sendEmail(dto:SmtpDto) {
+        javaMailSender.send(MimeMessagePreparator { mimeMessage: MimeMessage ->
+            mimeMessage.setFrom(dto.from)
+            mimeMessage.addRecipients(Message.RecipientType.TO, dto.to)
+            mimeMessage.subject = dto.subject
+            mimeMessage.setText(render(dto), "UTF-8", "html")
+        })
+    }
+
     private fun render(dto:SmtpDto): String {
         val context = Context()
         context.setVariables(dto.properties )

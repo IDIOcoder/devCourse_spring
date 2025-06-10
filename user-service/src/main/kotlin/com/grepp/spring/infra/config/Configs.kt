@@ -34,7 +34,6 @@ class WebMvcConfig : WebMvcConfigurer {
             .build()
 
         val timeModule = JavaTimeModule()
-            .addSerializer(CustomLocalDateTimeSerializer())
         return ObjectMapper()
             .registerModules(kotlinModule, timeModule)
             .configure(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS, false)

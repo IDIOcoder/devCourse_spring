@@ -10,13 +10,13 @@ import java.time.LocalDateTime
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 class BaseEntity {
-    protected var activated: Boolean = true
+    var activated: Boolean = true
 
     @CreatedDate
-    protected var createdAt: LocalDateTime = LocalDateTime.now()
+    var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
-    protected var modifiedAt: LocalDateTime = LocalDateTime.now()
+    var modifiedAt: LocalDateTime = LocalDateTime.now()
 
     fun unActivated() {
         this.activated = false
