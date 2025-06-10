@@ -35,7 +35,13 @@ spring:
               uri: http://localhost:8082
               predicates:
                 - Path=/api/member/**
-
+    loadbalancer:
+      clients:
+        - name: chat-service # 이 이름은 위 'uri'의 'chat-service'와 반드시 일치해야 합니다.
+          static:
+            instances:
+              - uri: "ws://localhost:9091"
+              - uri: "ws://localhost:9092"
 
 logging:
   level:

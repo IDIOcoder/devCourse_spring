@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class InternalAuthFilter(
-    private val userDetailsService: UserDetailsServiceImpl
-):OncePerRequestFilter() {
+class InternalAuthFilter:OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -20,14 +18,9 @@ class InternalAuthFilter(
         filterChain: FilterChain
     ) {
 
-        val userId = request.getHeader("x-member-id")
-        val roles = request.getHeader("x-member-role")
-        val authorities:MutableSet<SimpleGrantedAuthority> = userDetailsService.findAuthorities(userId)
-
-        userId ?: return
-        roles?.let{
-            authorities += SimpleGrantedAuthority(it)
-        }
+        val userId = request.getHeader("x-member-id") ?: "ANONYMOUS"
+        val roles = request.getHeader("x-member-role") ?: "ROLE_ANONYMOUS"
+        val authorities:MutableSet<SimpleGrantedAuthority> = mutableSetOf(SimpleGrantedAuthority(roles))
 
         val authentication = UsernamePasswordAuthenticationToken(userId,null, authorities)
         SecurityContextHolder.getContext().authentication = authentication

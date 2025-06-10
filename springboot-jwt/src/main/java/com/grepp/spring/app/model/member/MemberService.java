@@ -6,7 +6,9 @@ import com.grepp.spring.app.model.member.entity.Member;
 import com.grepp.spring.app.model.member.entity.MemberInfo;
 import com.grepp.spring.infra.error.exceptions.CommonException;
 import com.grepp.spring.infra.mail.MailTemplate;
+import com.grepp.spring.infra.mail.SmtpDto;
 import com.grepp.spring.infra.response.ResponseCode;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -60,11 +62,11 @@ public class MemberService{
         if(memberRepository.existsById(dto.getUserId()))
             throw new CommonException(ResponseCode.BAD_REQUEST);
         
-        mailTemplate.setTo(dto.getEmail());
-        mailTemplate.setTemplatePath("/mail/signup-verification");
-        mailTemplate.setSubject("회원가입을 환영합니다!");
-        mailTemplate.setProperties("domain", domain);
-        mailTemplate.setProperties("token", token);
-        mailTemplate.send();
+        SmtpDto smtpDto = new SmtpDto();
+        smtpDto.setTo(dto.getEmail());
+        smtpDto.setTemplatePath("/mail/signup-verification");
+        smtpDto.setSubject("회원가입을 환영합니다!");
+        smtpDto.setProperties(Map.of("domain", domain, "token", token));
+        mailTemplate.send(smtpDto);
     }
 }

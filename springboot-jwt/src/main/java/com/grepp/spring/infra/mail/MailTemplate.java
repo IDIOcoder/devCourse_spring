@@ -21,36 +21,20 @@ public class MailTemplate {
     
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
-    // thymeleaf 의 context 에 전달할 데이터 저장
-    private final Map<String, Object> properties = new LinkedHashMap<>();
-    
-    private String templatePath;
-    private String to;
-    @Value("${spring.mail.username}")
-    private String from;
-    private String subject;
-    
-    public void setProperties(String name, Object value){
-        properties.put(name, value);
-    }
-    
-    public Object getProperties(String name){
-        return properties.get(name);
-    }
     
     @Async
-    public void send(){
+    public void send(SmtpDto dto){
         javaMailSender.send(mimeMessage -> {
-            mimeMessage.setFrom(from);
-            mimeMessage.addRecipients(RecipientType.TO, to);
-            mimeMessage.setSubject(subject);
-            mimeMessage.setText(render(), "UTF-8", "html");
+            mimeMessage.setFrom(dto.getFrom());
+            mimeMessage.addRecipients(RecipientType.TO, dto.getTo());
+            mimeMessage.setSubject(dto.getSubject());
+            mimeMessage.setText(render(dto), "UTF-8", "html");
         });
     }
     
-    private String render(){
+    private String render(SmtpDto dto){
         Context context = new Context();
-        context.setVariables(properties);
-        return templateEngine.process(templatePath, context);
+        context.setVariables(dto.getProperties());
+        return templateEngine.process(dto.getTemplatePath(), context);
     }
 }

@@ -28,6 +28,7 @@ class InternalAuthFilter(
         roles?.let{
             authorities += SimpleGrantedAuthority(it)
         }
+
         val authentication = UsernamePasswordAuthenticationToken(userId,null, authorities)
         SecurityContextHolder.getContext().authentication = authentication
         filterChain.doFilter(request, response)
