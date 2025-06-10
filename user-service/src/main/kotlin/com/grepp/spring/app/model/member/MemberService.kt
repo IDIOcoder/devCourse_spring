@@ -44,7 +44,7 @@ class MemberService(
         memberRepository.save(member)
 
         val outbox = Outbox(
-            eventType = "signup-complete",
+            eventType = "signup_complete",
             payload = member.email
         )
         outboxRepository.save(outbox)

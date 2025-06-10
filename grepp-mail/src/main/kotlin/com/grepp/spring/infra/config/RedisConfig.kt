@@ -45,11 +45,6 @@ class RedisConfig(
     }
 
     @Bean
-    fun listener(): EventMessageDelegate {
-        return eventMessageDelegate
-    }
-
-    @Bean
     fun messageListenerAdapter(listener: EventMessageDelegate): MessageListenerAdapter {
         return MessageListenerAdapter(listener, "handleMessage")
     }

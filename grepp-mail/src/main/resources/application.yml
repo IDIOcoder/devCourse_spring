@@ -29,7 +29,7 @@ spring:
   mail:
     host: smtp.gmail.com
     username: azimemory@gmail.com
-    password:
+    password: seawjqxobzrjjrts
     properties:
       mail:
         stmp:

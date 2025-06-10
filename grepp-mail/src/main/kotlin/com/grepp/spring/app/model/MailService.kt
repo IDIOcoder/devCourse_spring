@@ -28,7 +28,8 @@ class MailService(
                         .valueOf(request.eventType.uppercase()).path,
                     from = request.from,
                     to = it,
-                    subject = request.subject
+                    subject = request.subject,
+                    properties = request.properties
                 )
                 semaphore.withPermit {
                     template.send(dto)
