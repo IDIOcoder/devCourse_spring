@@ -20,14 +20,15 @@ class InternalAuthFilter(
         filterChain: FilterChain
     ) {
 
-        val userId = request.getHeader("x-member-id")
-        val roles = request.getHeader("x-member-role")
-        val authorities:MutableSet<SimpleGrantedAuthority> = userDetailsService.findAuthorities(userId)
+        val userId = request.getHeader("x-member-id") ?: "ANONYMOUS"
+        val roles = request.getHeader("x-member-role") ?: "ROLE_ANONYMOUS"
 
-        userId ?: return
-        roles?.let{
-            authorities += SimpleGrantedAuthority(it)
+        val authorities:MutableSet<SimpleGrantedAuthority> = mutableSetOf()
+        if(userId != "ANONYMOUS" && roles != "ROLE_SERVER" ){
+            authorities +=  userDetailsService.findAuthorities(userId)
         }
+
+        authorities += SimpleGrantedAuthority(roles)
 
         val authentication = UsernamePasswordAuthenticationToken(userId,null, authorities)
         SecurityContextHolder.getContext().authentication = authentication
