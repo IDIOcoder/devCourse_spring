@@ -8,6 +8,7 @@ plugins {
 
 group = "com.grepp"
 version = "0.0.1-SNAPSHOT"
+extra["springCloudVersion"] = "2025.0.0"
 
 java {
     toolchain {
@@ -26,6 +27,9 @@ repositories {
 }
 
 dependencies {
+
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -42,6 +46,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
 }
 
 kotlin {
