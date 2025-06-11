@@ -52,6 +52,7 @@ class GatewayLogoutFilter(
             response.addHeader("Set-Cookie", expiredRefreshToken.toString())
             response.addHeader("Set-Cookie", expiredSessionId.toString())
             response.sendRedirect("/")
+            filterChain.doFilter(request, response)
             return
         }
 

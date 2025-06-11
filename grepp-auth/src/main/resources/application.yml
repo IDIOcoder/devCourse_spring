@@ -26,7 +26,7 @@ spring:
               redirect-uris:
                 - "http://localhost:8080/login/oauth2/code/grepp"
               post-logout-redirect-uris:
-                - "http://localhost:8080/logout/oauth2/code/grepp"
+                - "http://localhost:8080"
               scopes:
                 - "openid"
                 - "profile"
@@ -62,20 +62,29 @@ spring:
       port: 11686
       ssl:
         enabled: true
+  application:
+    name: auth-service
+
+eureka:
+  instance:
+    instance-id: auth-service-A
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
 
 logging:
   level:
     root: info
     org:
       hibernate:
-        SQL: debug
+        SQL: info
         type:
           descriptor:
-            sql: trace
+            sql: info
       springframework:
         cloud:
-          openfeign: trace
-        security: trace
+          openfeign: info
+        security: info
 
 jwt:
   secrete: sskfjsasdkfsdklfjwioesdfjslkdfjsdlkfjsdlf

@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
-    name = "mail-service",
-    url = "http://localhost:8080/mail/"
+    name = "mail-service" // 유레카에 등록된 서비스 이름
 )
 interface MailApi {
-    @PostMapping("send")
+    @PostMapping("/mail/send")
     fun sendMail(
         @RequestHeader(name="x-member-id")
         userId:String = "user-service",

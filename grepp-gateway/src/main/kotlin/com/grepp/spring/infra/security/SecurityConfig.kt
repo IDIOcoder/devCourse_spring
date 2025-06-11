@@ -38,7 +38,6 @@ class SecurityConfig(
             .csrf { it.disable() }
             .formLogin { it.disable() }
             .httpBasic { it.disable() }
-            .logout { it.disable() }
             .sessionManagement { session: SessionManagementConfigurer<HttpSecurity?> ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS

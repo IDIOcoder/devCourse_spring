@@ -75,7 +75,6 @@ class JwtAuthenticationFilter(
         try {
             if (jwtProvider.validateToken(requestAccessToken)) {
                 request.setAttribute("x-member-id", claims.subject)
-                // fixme accesstoken 발행 시 권한 추가
                 request.setAttribute("x-member-role", claims["roles"])
             }
         } catch (ex: ExpiredJwtException) {

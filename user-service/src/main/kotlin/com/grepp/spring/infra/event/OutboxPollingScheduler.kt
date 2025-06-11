@@ -17,7 +17,7 @@ class OutboxPollingScheduler(
     private val log = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    @Scheduled(fixedDelayString = "10000")
+    @Scheduled(fixedDelayString = "100000000000000")
     fun pollAndPublish(){
         val unpublished = outboxRepository.findByActivatedIsTrueOrderByCreatedAt()
         if(unpublished.isEmpty()) return
