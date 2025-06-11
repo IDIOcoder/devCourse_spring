@@ -94,7 +94,7 @@
       user = prompt("사용할 닉네임을 입력하세요.");
 
       const stompClient = new StompJs.Client({
-        brokerURL: 'ws://localhost:8080/connect'
+        brokerURL: 'ws://localhost:8081/connect'
       });
 
       stompClient.onConnect = frame => {
