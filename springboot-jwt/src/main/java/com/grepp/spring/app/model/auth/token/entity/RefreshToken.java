@@ -7,21 +7,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
-@Getter @Setter
-@RedisHash(value = "refreshToken", timeToLive = 3600 * 24 * 7)
+@Getter
+@Setter
 public class RefreshToken {
-    @Id
     private String id = UUID.randomUUID().toString();
-    private String email;
-    @Indexed
-    private String accessTokenId;
+    private String atId;
     private String token = UUID.randomUUID().toString();
+    private Long ttl = 3600 * 24 * 7L;
     
-    public RefreshToken() {
-    }
-    
-    public RefreshToken(String email, String id) {
-        this.email = email;
-        this.accessTokenId = id;
+    public RefreshToken(String atId) {
+        this.atId = atId;
     }
 }

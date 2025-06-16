@@ -15,7 +15,7 @@ class RedisConfigTest {
     
     @Test
     public void testRedisTemplate(){
-        refreshTokenRepository.save(new RefreshToken("super@grepp.com", "test-uuid"));
+        refreshTokenRepository.save(new RefreshToken("super@grepp.com"));
     }
     
     @Test

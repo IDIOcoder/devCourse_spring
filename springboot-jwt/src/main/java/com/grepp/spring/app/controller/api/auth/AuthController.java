@@ -32,7 +32,7 @@ public class AuthController {
         SigninRequest req,
         HttpServletResponse response
     ) {
-        TokenDto dto = authService.signin(req.getUsername(), req.getPassword());
+        TokenDto dto = authService.signin(req);
         ResponseCookie accessTokenCookie = TokenCookieFactory.create(TokenType.ACCESS_TOKEN.name(),
             dto.getAccessToken(), dto.getAtExpiresIn());
         ResponseCookie refreshTokenCookie = TokenCookieFactory.create(TokenType.REFRESH_TOKEN.name(),

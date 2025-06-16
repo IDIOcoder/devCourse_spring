@@ -36,8 +36,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class JwtProvider {
     
-    private RefreshTokenRepository refreshTokenRepository;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final UserDetailsServiceImpl userDetailsService;
     
     @Value("${jwt.secrete}")
@@ -98,7 +96,6 @@ public class JwtProvider {
             return ex.getClaims();
         }
     }
-    
     
     public boolean validateToken(String requestAccessToken) {
         try{
